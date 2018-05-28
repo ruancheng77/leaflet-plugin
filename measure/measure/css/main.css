@@ -1,0 +1,45 @@
+.measure-cur {
+    cursor: url(../images/ruler.cur), crosshair!important;
+}
+
+.measure-msg .leaflet-popup-content-wrapper {
+    position: relative;
+    width: auto;
+    height: auto;
+    border: 1px solid #7a7a7a;
+    border-radius: 0;
+    font-size: 12px;
+}
+
+.measure-msg .leaflet-popup-content-wrapper .leaflet-popup-content {
+    margin: 0;
+    text-align: center;
+}
+
+.measure-msg .leaflet-popup-tip-container {
+    display: none;
+}
+
+.measure-msg .m_dist {
+    color: #7a7a7a;
+}
+
+.measure-msg .m_distEnd {
+    color: #000;
+}
+
+.measure-msg .m_distImp {
+    color: #ff6319;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="leaflet/leaflet.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="measure/css/main.css">
+</head>
+
+<body>
+    <div id="map">
+        <div class="tool-bar">
+            <div class="boxopt">
+                <i class="boxtext">工具箱</i>
+                <em class="glyphicon glyphicon-menu-down"></em>
+            </div>
+            <div class="detail-box">
+                <div class="box-item map-measure">
+                    <span>测距</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script src="leaflet/leaflet-src.js"></script>
+    <script src="measure/js/Measure.js"></script>
+    <script>
+        $(function() {
+            var $map = $("#map")
+            $toolBar = $(".tool-bar"),
+                $detailBox = $toolBar.find(".detail-box"),
+                $mapMeasure = $detailBox.find(".map-measure");
+            $map.css({
+                width: $(window).width(),
+                height: $(window).height(),
+            });
+            var map = L.map("map").setView([39.90103, 116.39156], 12);
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
+
+            $toolBar.click(function() {
+                $detailBox.slideToggle();
+            });
+            $mapMeasure.click(function(e) {
+                if (e && e.stopPropagation) {
+                    e.stopPropagation(); // W3C 取消冒泡事件
+                } else {
+                    window.event.cancelBubble = true; // IE 取消冒泡事件
+                }
+                var measure = L.measure(map).start();
+                $detailBox.slideUp();
+            });
+        });
+    </script>
+</body>
+
+</html>
