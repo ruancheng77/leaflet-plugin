@@ -7,8 +7,8 @@ L.Measure = L.Polyline.extend({
         endedState: 3,
         pointIcon: L.icon({
             iconUrl: 'measure/images/measure-point.png',
-            iconSize: [6, 6],
-            iconAnchor: [3, 3],
+            iconSize: [12, 12],
+            iconAnchor: [6, 6],
         }),
         closeIcon: L.icon({
             iconUrl: 'measure/images/line_close.png',
