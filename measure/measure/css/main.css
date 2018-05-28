@@ -1,3 +1,8 @@
+.measure-msg {
+    bottom: 0!important;
+    left: 20px!important;
+}
+
 .measure-cur {
     cursor: url(../images/ruler.cur), crosshair!important;
 }

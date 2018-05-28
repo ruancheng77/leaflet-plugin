@@ -10,6 +10,11 @@ L.Measure = L.Polyline.extend({
             iconSize: [6, 6],
             iconAnchor: [3, 3],
         }),
+        closeIcon: L.icon({
+            iconUrl: 'measure/images/line_close.png',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6],
+        }),
         preLineColor: "#faba99",
         lineColor: "red",
         cursorClassName: "measure-cur",
@@ -19,13 +24,13 @@ L.Measure = L.Polyline.extend({
     options: {},
 
     initialize: function(map, options) {
-        // L.Polyline.prototype.initialize.call(this, [], options);
         this._map = map;
         this._container = map.getContainer();
         this._currentIdx = 0;
         this._state = L.Measure.notStartedState;
         this._preLine = null;
         this._points = [];
+        this._popups = [];
         this._endPopup = null;
         this._promptBox = null;
         this._totalDistance = 0;
@@ -69,6 +74,7 @@ L.Measure = L.Polyline.extend({
                     _this._preLine && _this._preLine.remove();
                     _this._promptBox && _this._promptBox.remove();
                     _this._endPopup.setContent(_this.getContent(_this._endPopup, 3));
+                    _this.addCloseMarker(e.latlng);
                     _this.changeCursor();
                     // 结束测距，启动双击缩放
                     setTimeout(function() {
@@ -124,12 +130,13 @@ L.Measure = L.Polyline.extend({
         var popup = this.getMsgPopup();
         popup.setLatLng(latlng);
         popup.openOn(this._map);
-        this._endPopup = popup;
         if (this._points.length == 1) {
             popup.setContent(this.getContent(popup, 0));
         } else {
             popup.setContent(this.getContent(popup));
         }
+        this._popups.push(popup);
+        this._endPopup = popup;
         if (!this._measureLine) {
             this._measureLine = L.polyline([latlng], { color: L.Measure.lineColor });
             this._measureLine.addTo(this._map);
@@ -205,10 +212,14 @@ L.Measure = L.Polyline.extend({
         } else if (type === 3) {
             this.calDistance();
             return "<div class='m_distEnd'>总长：<span class='m_distImp'>" + this._totalDistance + "</span>" + this._distance_unit + "</div>";
+        } else if (type === 4) {
+            this.calDistance();
+            return "<span class='m_distImp'>x</span>";
         } else {
             this.calDistance();
             return "<div class='m_dist'><span>" + this._totalDistance + this._distance_unit + "</span></div>";
         }
+
     },
 
     /** 计算提示框位置 */
@@ -216,18 +227,28 @@ L.Measure = L.Polyline.extend({
         var ele = popup.getElement();
         var rect = ele.firstElementChild.getBoundingClientRect();
         if (type === 1) {
-            ele.firstElementChild.style.left = "50px";
-            ele.firstElementChild.style.top = "50px";
+            ele.firstElementChild.style.setProperty("left", "-10px");
+            ele.firstElementChild.style.setProperty("bottom", "-55px");
         } else if (type === 2) {
-            ele.firstElementChild.style.left = Math.ceil(rect.width / 2) + 20 + "px";
-            ele.firstElementChild.style.top = Math.ceil(rect.height) + 6 + "px";
+            ele.firstElementChild.style.setProperty("bottom", "-80px");
         } else if (type === 3) {
-            ele.firstElementChild.style.left = "50px";
-            ele.firstElementChild.style.top = "42px";
+            ele.firstElementChild.style.setProperty("left", "-20px");
+            ele.firstElementChild.style.setProperty("bottom", "-50px");
         } else {
-            ele.firstElementChild.style.left = "40px";
-            ele.firstElementChild.style.top = "22px";
+            ele.firstElementChild.style.setProperty("bottom", "-28px");
         }
+    },
+
+    /** 测距结束，添加关闭图标 */
+    addCloseMarker: function(latlng) {
+        var _this = this;
+        this._closeMarker = L.marker(latlng, { riseOnHover: true, icon: L.Measure.closeIcon });
+        this._closeMarker.on("click", function(e) {
+            _this.remove();
+        });
+        this._closeMarker.addTo(this._map);
+        var ele = this._closeMarker.getElement();
+        ele.style.top = "-15px";
     },
 
     clear: function() {
@@ -237,6 +258,20 @@ L.Measure = L.Polyline.extend({
         this._points.forEach(function(item) {
             item.remove();
         });
+        this._state = this._state.endedState;
+    },
+
+    remove: function() {
+        this._measureLine && this._measureLine.remove();
+        this._preLine && this._preLine.remove();
+        this._endPopup && this._endPopup.remove();
+        this._points.forEach(function(item) {
+            item.remove();
+        });
+        this._popups.forEach(function(item) {
+            item.remove();
+        });
+        this._closeMarker && this._closeMarker.remove();
         this._state = this._state.endedState;
     }
 
